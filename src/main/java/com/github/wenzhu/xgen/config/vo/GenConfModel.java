@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * x-gen核心框架配置对应的数据model
  */
-public class GenConfigModel {
+public class GenConfModel {
 
 	/**
 	 * 描述注册的多个用户需要生成的模块的model
@@ -48,6 +48,7 @@ public class GenConfigModel {
 	}
 
 	public ThemeModel getThemeById(String themeId) {
+		
 		for (ThemeModel tm : this.themes) {
 			if (tm.getId().equals(themeId)) {
 				return tm;

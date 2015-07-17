@@ -3,51 +3,53 @@ package com.github.wenzhu.xgen.config.manager;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.wenzhu.xgen.config.implementors.GenImplementor;
-import com.github.wenzhu.xgen.config.implementors.ModuleGenImplementor;
-import com.github.wenzhu.xgen.config.vo.GenConfigModel;
+import com.github.wenzhu.xgen.config.vo.GenConfModel;
 import com.github.wenzhu.xgen.config.vo.ModuleConfModel;
 import com.github.wenzhu.xgen.config.vo.NeedGenModel;
-
-public class ConfigManager {
+import com.github.wenzhu.xgen.genconf.implementors.GenConfImplementor;
+import com.github.wenzhu.xgen.genconf.implementors.ModuleGenConfImplementor;
+/**
+ * 
+ * 名称: ConfManager.java<br>
+ * 描述:负责真正去获取配置数据，并缓存配置数据 <br>
+ * 类型: JAVA<br>
+ * @since  2015年7月17日
+ * @author jy.chen
+ */
+public class ConfManager {
 	
-	private static ConfigManager manager = null;
+	private static ConfManager manager = null;
 	
-	private ConfigManager(GenImplementor provider) {
+	private ConfManager(GenConfImplementor provider) {
 		readConfig(provider);
 	}
 	
-	public static ConfigManager getInstance(GenImplementor provider) {
+	public static ConfManager getInstance(GenConfImplementor provider) {
 		if(manager == null) {
-			manager = new ConfigManager(provider);
+			manager = new ConfManager(provider);
 		}
 		return manager;
 	}
-	
-	//ʵ����ݻ���
-	private GenConfigModel genConf = new GenConfigModel();
+	// 定义需要缓存的数据
+	private GenConfModel genConf = new GenConfModel();
 	private Map<String, ModuleConfModel> moduleConf = new HashMap<>();
 
-	public GenConfigModel getGenConfig() {
+	public GenConfModel getGenConfig() {
 		return this.genConf;
 	}
 	
 	public Map<String, ModuleConfModel> getMapModuleConfig() {
 		return this.moduleConf;
 	}
-	
-	/**
-	 * ȥ�����ʵ����ݵĶ�ȡ
-	 */
-	private void readConfig(GenImplementor provider) {
-		//��ȡ���������ļ�
+	private void readConfig(GenConfImplementor provider) {
+		//真正的获取配置数据
 		readGenConfig(provider);
 		for(NeedGenModel model : genConf.getNeedGens()) {
 			readOneModelConfig(model);
 		}
 	}
 
-	private void readGenConfig(GenImplementor provider) {
+	private void readGenConfig(GenConfImplementor provider) {
 		genConf.setNeedGens(provider.getNeedGens());
 		genConf.setThemes(provider.getThemes());
 		genConf.setMapConstants(provider.getMapConstants());
@@ -57,10 +59,10 @@ public class ConfigManager {
 		ModuleConfModel conf = new ModuleConfModel();
 		
 		String themeId = model.getTheme();
-		String providerClassName = genConf.getThemeById(themeId).getProvider().get(model.getProvider());
-		ModuleGenImplementor userGenConfImpl = null;
+		String providerClassName = genConf.getThemeById(themeId).getProviderMap().get(model.getProvider());
+		ModuleGenConfImplementor userGenConfImpl = null;
 		try {
-			userGenConfImpl = (ModuleGenImplementor) Class.forName(providerClassName).newInstance();
+			userGenConfImpl = (ModuleGenConfImplementor) Class.forName(providerClassName).newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -69,7 +71,6 @@ public class ConfigManager {
 		conf.setNeedGendTypes(userGenConfImpl.getMapNeedGenTypes(model.getParams()));
 		conf.setExtendsMap(userGenConfImpl.getMapExtends(genConf, model.getParams()));
 		
-		//��ģ�������������õ�������
 		this.moduleConf.put(conf.getId(), conf);
 	}
 	

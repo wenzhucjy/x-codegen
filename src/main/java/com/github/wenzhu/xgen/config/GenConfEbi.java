@@ -2,17 +2,17 @@ package com.github.wenzhu.xgen.config;
 
 import java.util.Map;
 
-import com.github.wenzhu.xgen.config.vo.GenConfigModel;
+import com.github.wenzhu.xgen.config.vo.GenConfModel;
 import com.github.wenzhu.xgen.config.vo.ModuleConfModel;
 
-public interface GenConfigEbi {
+public interface GenConfEbi {
 
 	/**
 	 * 获取x-gen核心框架运行所需要的配置数据Model
 	 * 
 	 * @return 核心框架运行所需要的配置数据model
 	 */
-	public GenConfigModel getConfig();
+	public GenConfModel getConfig();
 
 	/**
 	 * 获取需要生成的所有模块的配置
